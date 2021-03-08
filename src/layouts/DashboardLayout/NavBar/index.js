@@ -43,7 +43,7 @@ const items = [
     title: 'Word'
   },
   {
-    href: '/app/wordCard',
+    href: '/app/card',
     icon: SpellcheckIcon,
     title: 'Word Card'
   },

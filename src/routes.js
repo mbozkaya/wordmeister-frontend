@@ -24,7 +24,7 @@ const routes = [
       { path: 'settings', element: <SettingsView /> },
       // { path: 'keyword', element: <KeywordView /> },
       { path: 'word', element: <Word /> },
-      { path: 'wordcard', element: <WordCard /> },
+      { path: 'card', element: <WordCard /> },
       { path: '*', element: <Navigate to="/404" /> }
     ]
   },
