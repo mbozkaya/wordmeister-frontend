@@ -18,16 +18,16 @@ const columns = {
   ],
   word: [
     {
-      id: 'text', numeric: false, disablePadding: true, label: 'Text', description: 'Text', edittable: true, show: true,
+      id: 'text', numeric: false, disablePadding: true, label: 'Text', description: 'Text', edittable: true, show: true, sorttable: true,
     },
     {
-      id: 'description', numeric: false, disablePadding: false, label: 'Description', description: 'Description', edittable: true, show: true,
+      id: 'description', numeric: false, disablePadding: false, label: 'Description', description: 'Description', edittable: true, show: true, sorttable: true,
     },
     {
-      id: 'createdDate', numeric: false, disablePadding: false, label: 'Created Date', description: 'Created Date', date: true, edittable: false, show: true,
+      id: 'createdDate', numeric: false, disablePadding: false, label: 'Created Date', description: 'Created Date', date: true, edittable: false, show: true, sorttable: true,
     },
     {
-      id: 'action', numeric: false, disablePadding: false, label: 'Action', description: 'Action', edittable: false, show: false,
+      id: 'action', numeric: false, disablePadding: false, label: 'Action', description: 'Action', edittable: false, show: false, sorttable: false,
     },
   ]
 };
