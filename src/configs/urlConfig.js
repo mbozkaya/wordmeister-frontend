@@ -12,6 +12,7 @@ export default {
     removeFile: `${appConfig.api.accountService()}/RemoveFile`,
     updateInformation: `${appConfig.api.accountService()}/UpdateInformation`,
     updatePassword: `${appConfig.api.accountService()}/UpdatePassword`,
+    settings: `${appConfig.api.accountService()}/Settings`,
   },
   wordMeister: {
     addWord: `${appConfig.api.service()}Word/AddWord`,

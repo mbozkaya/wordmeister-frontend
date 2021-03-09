@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import {
@@ -21,6 +21,9 @@ import {
   useTheme,
   useMediaQuery,
 } from '@material-ui/core';
+import accountService from 'src/services/accountService';
+import ToasterSnackbar from 'src/components/ToasterSnackbar';
+import Constants from 'src/helpers/Constants';
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -42,13 +45,34 @@ const useStyles = makeStyles((theme) => ({
 const Notifications = ({ className, ...rest }) => {
   const classes = useStyles();
   const [notificationData, setNotificationData] = useState({
-    isEnable: false,
     hour: '23',
     minute: '00',
+    enable: false,
   });
   const [open, setOpen] = React.useState(false);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const getCorrectFormat = (value) => (value < 10 ? `0${value}` : value.toString());
+
+  const getSettings = () => {
+    accountService.getSettings().then((response) => {
+      if (response && response.error === false) {
+        const { data: { mailSetting, minute, hour } } = response;
+        setNotificationData({
+          ...notificationData,
+          hour: getCorrectFormat(hour),
+          minute: getCorrectFormat(minute),
+          enable: mailSetting,
+        });
+      } else {
+        ToasterSnackbar.error(response.errorMessage || 'An error occured');
+      }
+    });
+  };
+
+
+  useEffect(() => { getSettings(); }, []);
 
   return (
     <>
@@ -86,20 +110,22 @@ const Notifications = ({ className, ...rest }) => {
                     <FormControlLabel
                       control={(
                         <Switch
-                          checked={notificationData.isEnable}
-                          onChange={() => setNotificationData({
-                            ...notificationData,
-                            isEnable: !notificationData.isEnable,
-                          })}
+                          onChange={() => {
+                            setNotificationData({
+                              ...notificationData,
+                              enable: !notificationData.enable,
+                            });
+                          }}
                           name="checkedB"
                           color="primary"
+                          checked={notificationData.enable}
                         />
                       )}
                       label="Email"
                     />
                   </Grid>
                   {
-                    notificationData.isEnable && (
+                    notificationData.enable && (
                       <Grid
                         className={classes.item}
                         item
@@ -124,8 +150,8 @@ const Notifications = ({ className, ...rest }) => {
                             const minute = parseInt(value.split(':')[1], 10);
                             setNotificationData({
                               ...notificationData,
-                              hour: hour < 10 ? `0${hour}` : hour.toString(),
-                              minute: minute < 10 ? `0${minute}` : minute.toString(),
+                              hour: getCorrectFormat(hour),
+                              minute: getCorrectFormat(minute),
                             });
                           }}
                           value={`${notificationData.hour}:${notificationData.minute}`}
@@ -146,7 +172,15 @@ const Notifications = ({ className, ...rest }) => {
             <Button
               color="primary"
               variant="contained"
-              onClick={() => setOpen(true)}
+              onClick={() => {
+                if (notificationData.enable
+                  // eslint-disable-next-line eqeqeq
+                  && (notificationData.hour == 0 || notificationData.minute == 0)) {
+                  ToasterSnackbar.warning({ message: 'Please enter valid hour and minute' });
+                } else {
+                  setOpen(true);
+                }
+              }}
             >
               Save
             </Button>
@@ -163,7 +197,7 @@ const Notifications = ({ className, ...rest }) => {
         <DialogContent>
           <DialogContentText>
             {
-              notificationData.isEnable
+              notificationData.enable
                 ? `You will start to receive mail notification on next day ${notificationData.hour}:${notificationData.minute}.`
                 : 'Your notification settings will be removed.'
             }
@@ -173,7 +207,28 @@ const Notifications = ({ className, ...rest }) => {
           <Button autoFocus onClick={() => setOpen(false)} color="default">
             Cancel
           </Button>
-          <Button onClick={() => setOpen(false)} color="primary" autoFocus>
+          <Button
+            onClick={() => {
+              const model = {
+                userSettings: [{
+                  type: Constants.userSettingType.mailNotification,
+                  enable: notificationData.enable,
+                }],
+                hour: parseInt(notificationData.hour, 10),
+                minute: parseInt(notificationData.minute, 10),
+              };
+              accountService.updateSettings(model).then((response) => {
+                if (response && response.error === false) {
+                  setOpen(false);
+                  getSettings();
+                } else {
+                  ToasterSnackbar.error({ message: response.errorMessage || 'An error occured' });
+                }
+              });
+            }}
+            color="primary"
+            autoFocus
+          >
             Save
           </Button>
         </DialogActions>

@@ -90,7 +90,7 @@ export default {
       method: 'POST',
       body: JSON.stringify(model),
       headers: utilitity.authorizedHeader()
-    }
+    };
     return Fetch(urlConfig.account.updateInformation, requestOptions);
   },
   updatePassword: (model) => {
@@ -98,8 +98,25 @@ export default {
       method: 'POST',
       body: JSON.stringify(model),
       headers: utilitity.authorizedHeader()
-    }
+    };
 
     return Fetch(urlConfig.account.updatePassword, requestOptions);
-  }
+  },
+  updateSettings: (model) => {
+    const requestOptions = {
+      method: 'POST',
+      body: JSON.stringify(model),
+      headers: utilitity.authorizedHeader()
+    };
+
+    return Fetch(urlConfig.account.settings, requestOptions);
+  },
+  getSettings: () => {
+    const requestOptions = {
+      method: 'GET',
+      headers: utilitity.authorizedHeader(),
+    };
+
+    return Fetch(urlConfig.account.settings, requestOptions);
+  },
 };

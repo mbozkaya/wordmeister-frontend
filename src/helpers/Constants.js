@@ -14,4 +14,7 @@ export default {
     chartCard: 5,
     latestSentences: 6,
   },
+  userSettingType: {
+    mailNotification: 1,
+  },
 };
