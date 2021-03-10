@@ -168,39 +168,38 @@ const WordCard = () => {
     });
   };
 
-  const navigateButton = (e) => {
-    switch (e.code.toLowerCase()) {
-      case 'arrowleft':
-        getData(currentIndexRef.current - 1 > 0 ? currentIndexRef.current - 1 : 1);
-        break;
-      case 'arrowright':
-        getData(currentIndexRef.current + 1);
-        break;
-      case 'space':
-        if (!showAddSentenceRef.current && currentTabRef.current === tabsEnum.sentences) {
-          setShowAddSentence(true);
-        }
-        break;
-      case 'keyd':
-        if (e.target.tagName === 'BODY') {
-          setCurrentTab(tabsEnum.definations);
-        }
-        break;
-      case 'keys':
-        if (e.target.tagName === 'BODY') {
-          setCurrentTab(tabsEnum.sentences);
-        }
-        break;
-      default:
-        break;
-    }
-  };
-
   useEffect(() => {
     getData();
-    window.addEventListener('keyup', (e) => navigateButton(e, cardData, currentTab));
+    const navigateButton = (e) => {
+      switch (e.code.toLowerCase()) {
+        case 'arrowleft':
+          getData(currentIndexRef.current - 1 > 0 ? currentIndexRef.current - 1 : 1);
+          break;
+        case 'arrowright':
+          getData(currentIndexRef.current + 1);
+          break;
+        case 'space':
+          if (!showAddSentenceRef.current && currentTabRef.current === tabsEnum.sentences) {
+            setShowAddSentence(true);
+          }
+          break;
+        case 'keyd':
+          if (e.target.tagName === 'BODY') {
+            setCurrentTab(tabsEnum.definations);
+          }
+          break;
+        case 'keys':
+          if (e.target.tagName === 'BODY') {
+            setCurrentTab(tabsEnum.sentences);
+          }
+          break;
+        default:
+          break;
+      }
+    };
+    window.addEventListener('keyup', navigateButton);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    return () => { window.removeEventListener('keyup', navigateButton); };
+    return () => window.removeEventListener('keyup', navigateButton);
   }, []);
 
   useEffect(() => { currentIndexRef.current = cardData.currentIndex; }, [cardData.currentIndex]);
@@ -440,21 +439,21 @@ const WordCard = () => {
                                 <>
                                   {
 
-                                      cardData.sentences.map((sentence, index) => (
-                                        <>
-                                          <ListItem alignItems="flex-start" key={`${index}listItem`}>
-                                            <ListItemAvatar key={`${index}avatar`}>
-                                              <Typography variant="h1" className={classes.numberTypography} key={`${index}typo`}>{index + 1}</Typography>
-                                            </ListItemAvatar>
-                                            <ListItemText
-                                              primary={sentence}
-                                              key={`${index}listItemtext`}
-                                            />
-                                          </ListItem>
-                                          <Divider key={`${index}divider`} variant="inset" component="li" />
-                                        </>
-                                      ))
-                                    }
+                                    cardData.sentences.map((sentence, index) => (
+                                      <>
+                                        <ListItem alignItems="flex-start" key={`${index}listItem`}>
+                                          <ListItemAvatar key={`${index}avatar`}>
+                                            <Typography variant="h1" className={classes.numberTypography} key={`${index}typo`}>{index + 1}</Typography>
+                                          </ListItemAvatar>
+                                          <ListItemText
+                                            primary={sentence}
+                                            key={`${index}listItemtext`}
+                                          />
+                                        </ListItem>
+                                        <Divider key={`${index}divider`} variant="inset" component="li" />
+                                      </>
+                                    ))
+                                  }
                                 </>
                               )
                             }
