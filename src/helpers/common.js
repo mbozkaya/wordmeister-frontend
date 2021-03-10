@@ -23,6 +23,20 @@ const common = {
     filter[type] = value;
     localStorage.setItem('dashboardFilter', JSON.stringify(filter));
   },
+  getDatatableOrder: () => {
+    const filter = JSON.parse(localStorage.getItem('datatableFilter'));
+    if (filter) return filter;
+
+    return {
+      order: 'asc',
+      orderBy: 'CreatedDate',
+    };
+  },
+  setDatatableFilter: (value) => {
+    let filter = common.getDashboardFilter();
+    filter = value;
+    localStorage.setItem('datatableFilter', JSON.stringify(filter));
+  },
 };
 
 export default common;

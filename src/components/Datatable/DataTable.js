@@ -17,6 +17,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import { Button } from '@material-ui/core';
 import EnhancedTableHead from './EnhencedTableHead';
 import EnhancedTableToolbar from './EnhencedTableToolbar';
+import common from 'src/helpers/common';
 
 // function createData(name, calories, fat, carbs, protein) {
 //   return {
@@ -99,13 +100,16 @@ const useStyles = makeStyles((theme) => ({
 
 const DataTable = (props) => {
   const {
-    defaultOrder, defaultOrderBy, defaultRowsPerPage, columns,
+    defaultRowsPerPage, columns,
     rowEdit, insertNewRow, removeRow, getData, getDataFlag
   } = props;
+
+  const defaultOrder = common.getDatatableOrder();
+
   const classes = useStyles();
   const [data, setData] = useState([]);
-  const [order, setOrder] = React.useState(defaultOrder);
-  const [orderBy, setOrderBy] = React.useState(defaultOrderBy);
+  const [order, setOrder] = React.useState(defaultOrder.order);
+  const [orderBy, setOrderBy] = React.useState(defaultOrder.orderBy);
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   // const [dense, setDense] = React.useState(false);
@@ -130,6 +134,9 @@ const DataTable = (props) => {
       orderBy: property,
       order: isAsc ? 'desc' : 'asc',
     });
+    defaultOrder.order = isAsc ? 'desc' : 'asc';
+    defaultOrder.orderBy = property;
+    common.setDatatableFilter(defaultOrder);
   };
 
   const handleSelectAllClick = (event) => {
@@ -273,22 +280,22 @@ const DataTable = (props) => {
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={`tableRow${index}`}
+                      key={`tr${index}`}
                       selected={isItemSelected}
                     >
                       {columns.map((col, index2) => (
                         <>
                           {index2 === 0 && (
-                            <TableCell padding="checkbox" key={`tableCell${row._uuid}${index2}`}>
+                            <TableCell padding="checkbox" key={`tc${index}${index2}${col.id}`}>
                               <Checkbox
                                 checked={isItemSelected}
                                 inputProps={{ 'aria-labelledby': labelId }}
-                                key={`${row._uuid}${col.id}`}
+                                key={`cb${index}${index2}${col.id}`}
                               />
                             </TableCell>
                           )}
                           {
-                            <TableCell id={labelId} scope="row" padding="none" align="left" key={`tableCell2${row._uuid}${index2}`}>
+                            <TableCell id={labelId} scope="row" padding="none" align="left" key={`tcl${index}${index2}`}>
                               {row[col.id] !== undefined
                                 ? (col.date ? new Date(Date.parse(row[col.id])).toLocaleString() : row[col.id])
                                 : (
@@ -301,14 +308,13 @@ const DataTable = (props) => {
                                       setDrawerOpen(true);
                                       setEditRow(row);
                                     }}
-                                    key={`button${row._uuid}${index2}`}
+                                    key={`b${index}${index2}`}
                                   >
                                     Edit
                                   </Button>
                                 )}
                             </TableCell>
                           }
-
                         </>
                       ))}
                     </TableRow>
@@ -342,8 +348,6 @@ DataTable.propTypes = {
   onPerPageChange: PropTypes.func,
   onPageCountChange: PropTypes.func,
   onPageChange: PropTypes.func,
-  defaultOrder: PropTypes.string,
-  defaultOrderBy: PropTypes.string,
   defaultRowsPerPage: PropTypes.number,
   rowEdit: PropTypes.func,
   insertNewRow: PropTypes.func,
@@ -357,8 +361,6 @@ DataTable.defaultProps = {
   onPerPageChange: (e) => console.log(e),
   onPageCountChange: (e) => console.log(e),
   onPageChange: (e) => console.log(e),
-  defaultOrder: 'asc',
-  defaultOrderBy: 'name',
   defaultRowsPerPage: 5,
   rowEdit: () => console.log('edit'),
   insertNewRow: () => { },
