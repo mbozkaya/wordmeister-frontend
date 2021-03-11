@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-globals */
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   makeStyles,
@@ -125,25 +125,24 @@ const WordCardSettings = (props) => {
     });
   };
 
-  useEffect(() => {
-    getData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const memoizeGetData = useCallback(getData, []);
   useEffect(() => {
     if (drawerOpen === false) {
       wordMeisterService.setUserWordSetting({ ...settingsData, point: settingsData.point * 2 })
         .then((response) => {
           if (response && response.error === false) {
             if (onSettingsChange) {
-              onSettingsChange();
+              onSettingsChange(1);
             }
           } else {
             ToasterSnackbar.error({ message: response.errorMessage || 'An error occured' });
           }
         });
     }
-  }, [drawerOpen]);
-  // eslint-disable react-hooks/exhaustive-deps
+    else {
+      memoizeGetData();
+    }
+  }, [drawerOpen, memoizeGetData]);
   return (
     <>
       <div

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Container,
   Grid,
@@ -146,8 +146,8 @@ const Dashboard = () => {
     });
   };
 
-  useEffect(() => { getDashboard(); }, []);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const memoizeDashboard = useCallback(getDashboard, []);
+  useEffect(() => { memoizeDashboard(); }, [memoizeDashboard]);
 
   const {
     totalSentences, totalWords, chartData, learnedWords, progressRate

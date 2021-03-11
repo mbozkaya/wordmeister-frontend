@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
@@ -12,18 +11,11 @@ import {
   Divider,
   Grid,
   TextField,
-  makeStyles
 } from '@material-ui/core';
 import accountService from 'src/services/accountService';
-import wordMeisterService from 'src/services/wordMeisterService';
 import ToasterSnackbar from 'src/components/ToasterSnackbar';
 
-const useStyles = makeStyles(() => ({
-  root: {}
-}));
-
-const ProfileDetails = ({ className, ...rest }) => {
-  const classes = useStyles();
+const ProfileDetails = () => {
   const [profileData, setProfileData] = useState({
     firstName: '',
     lastName: '',
@@ -31,13 +23,6 @@ const ProfileDetails = ({ className, ...rest }) => {
     phone: '',
     imageUri: '',
   });
-
-  const handleChange = (event) => {
-    setProfileData({
-      ...profileData,
-      [event.target.name]: event.target.value
-    });
-  };
 
   const getAccountInformation = () => {
     accountService.accountInformation().then((response) => {
@@ -53,12 +38,12 @@ const ProfileDetails = ({ className, ...rest }) => {
       }
     });
   };
-
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { getAccountInformation(); }, []);
 
   return (
     <Formik
-    enableReinitialize
+      enableReinitialize
       initialValues={{
         ...profileData
       }}
@@ -69,17 +54,15 @@ const ProfileDetails = ({ className, ...rest }) => {
           lastName: Yup.string().max(255).required('Last name is required')
         })
       }
-      onSubmit={(model)=>{
+      onSubmit={(model) => {
         accountService.updateInformation(model).then((response) => {
           if (response && response.error === false) {
-            ToasterSnackbar.success({ message: "Information change has successful!" })
-          }
-          else {
+            ToasterSnackbar.success({ message: 'Information change has successful!' });
+          } else {
             ToasterSnackbar.error({ message: response.errorMessage || 'An error occured' });
           }
-        })
-      }
-      }
+        });
+      }}
     >
 
       {
@@ -91,7 +74,6 @@ const ProfileDetails = ({ className, ...rest }) => {
           touched,
           values
         }) => {
-         
           return (
             <form
               // type="post"
@@ -121,11 +103,10 @@ const ProfileDetails = ({ className, ...rest }) => {
                         error={Boolean(touched.firstName && errors.firstName)}
                         fullWidth
                         helperText={touched.firstName && errors.firstName}
-                        helperText="Please specify the first name"
                         label="First name"
                         name="firstName"
                         required
-                        onBlur={handleBlur}                       
+                        onBlur={handleBlur}
                         onChange={handleChange}
                         value={values.firstName}
                         variant="outlined"
@@ -158,7 +139,6 @@ const ProfileDetails = ({ className, ...rest }) => {
                         error={Boolean(touched.email && errors.email)}
                         fullWidth
                         helperText={touched.email && errors.email}
-                        fullWidth
                         label="Email Address"
                         name="email"
                         required
@@ -178,22 +158,18 @@ const ProfileDetails = ({ className, ...rest }) => {
                 >
                   <Button
                     color="primary"
-                    variant="contained"   
-                    type="submit"                 
+                    variant="contained"
+                    type="submit"
                   >
                     Save details
-          </Button>
+                  </Button>
                 </Box>
               </Card>
             </form>
-
-          )
+          );
         }
-
       }
-
     </Formik>
-
   );
 };
 

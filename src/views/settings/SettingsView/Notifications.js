@@ -71,7 +71,7 @@ const Notifications = ({ className, ...rest }) => {
     });
   };
 
-
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { getSettings(); }, []);
 
   return (
