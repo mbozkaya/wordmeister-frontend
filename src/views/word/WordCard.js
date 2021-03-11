@@ -57,6 +57,7 @@ const useStyles = makeStyles((theme) => ({
   },
   mainRoot: {
     flexGrow: 1,
+    overflowX: 'hidden',
   },
   backgroundPaper: {
     backgroundColor: theme.palette.background.paper
@@ -147,8 +148,12 @@ const WordCard = () => {
   const currentIndexRef = useRef(cardData.currentIndex);
   const currentTabRef = useRef(currentTab);
   const showAddSentenceRef = useRef(showAddSentence);
+  const wordCount = useRef(cardData.wordCount);
 
   const getData = (currentIndex, isRandom = false) => {
+    if (currentIndex <= 1 || currentIndex > wordCount.current) {
+      return;
+    }
     const model = {
       currentIndex,
       isRandom
@@ -167,8 +172,8 @@ const WordCard = () => {
       }
     });
   };
-
   useEffect(() => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
     getData();
     const navigateButton = (e) => {
       switch (e.code.toLowerCase()) {
@@ -203,6 +208,7 @@ const WordCard = () => {
   }, []);
 
   useEffect(() => { currentIndexRef.current = cardData.currentIndex; }, [cardData.currentIndex]);
+  useEffect(() => { wordCount.current = cardData.wordCount; }, [cardData.wordCount]);
   useEffect(() => { showAddSentenceRef.current = showAddSentence; }, [showAddSentence]);
   useEffect(() => { currentTabRef.current = currentTab; }, [currentTab]);
 
@@ -381,8 +387,8 @@ const WordCard = () => {
                     <Box>
                       <Button
                         type="button"
-                        disabled={cardData.currentIndex < 1}
-                        onClick={() => getData(cardData.currentIndex - 1 > 0 ? cardData.currentIndex - 1 : 1)}
+                        disabled={cardData.currentIndex <= 1}
+                        onClick={() => getData(cardData.currentIndex - 1)}
                       >
                         <ArrowBackIosIcon />
                       </Button>
