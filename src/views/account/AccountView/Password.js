@@ -53,11 +53,11 @@ const Password = () => {
           [Yup.ref('oldPassword')],
           'The new password must be different.'
         )
-        .matches(
-          /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-          'Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and one special case Character'
-        )
-    })
+    }),
+    confirmNewPassword: Yup.string().when('newPassword', {
+      is: (val) => (!!(val && val.length > 0)),
+      then: Yup.string().oneOf([Yup.ref('newPassword')], 'Both new password field must be same')
+    }),
   });
 
   const [expanded, setExpanded] = React.useState(false);
@@ -76,13 +76,13 @@ const Password = () => {
           id="panel1bh-header"
         >
           <Typography className={classes.heading}>Password</Typography>
-          <Typography className={classes.secondaryHeading}>Update Password</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Formik
             initialValues={{
               oldPassword: '',
-              newPassword: ''
+              newPassword: '',
+              confirmNewPassword: '',
             }}
             validationSchema={ValidateSchema}
             onSubmit={(model, { resetForm }) => {
@@ -136,6 +136,20 @@ const Password = () => {
                         onChange={handleChange}
                         type="password"
                         value={values.newPassword}
+                        variant="outlined"
+                      />
+                      <TextField
+                        error={Boolean(touched.confirmNewPassword && errors.confirmNewPassword)}
+                        fullWidth
+                        helperText={touched.confirmNewPassword && errors.confirmNewPassword}
+                        label="Confirm New Password"
+                        margin="normal"
+                        name="confirmNewPassword"
+                        required
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        type="password"
+                        value={values.confirmNewPassword}
                         variant="outlined"
                       />
                     </CardContent>
