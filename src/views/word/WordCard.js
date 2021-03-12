@@ -58,6 +58,7 @@ const useStyles = makeStyles((theme) => ({
   mainRoot: {
     flexGrow: 1,
     overflowX: 'hidden',
+    overflowY: 'hidden',
   },
   backgroundPaper: {
     backgroundColor: theme.palette.background.paper
@@ -438,7 +439,7 @@ const WordCard = () => {
                               cardData.sentences == null || cardData.sentences?.length === 0 ? (
                                 <ListItem>
                                   <ListItemText>
-                                    <Typography variant="h1" className={classes.typography}>No data to show.</Typography>
+                                    <Typography variant="h1" className={classes.typography} align="center">No data to show.</Typography>
                                   </ListItemText>
                                 </ListItem>
                               ) : (

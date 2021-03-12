@@ -128,7 +128,7 @@ const Budget = (props) => {
               className={classes.differenceValue}
               variant="body2"
             >
-              {`${increasingRate * 100}%`}
+              {`${(increasingRate * 100).toFixed(2)}%`}
             </Typography>
             <Typography
               color="textSecondary"
