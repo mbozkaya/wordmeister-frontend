@@ -115,8 +115,8 @@ const EnhancedTableToolbar = (props) => {
             <form className={classes.textField} noValidate autoComplete="off">
               {
                 Array(columns).length > 0 && Object.keys(drawerData).length > 0 && (
-                  columns.filter((f) => f.show === true).map((col) => (
-                    <div>
+                  columns.filter((f) => f.show === true).map((col, index) => (
+                    <div key={`ett${index}`}>
                       <TextField
                         label={col.label}
                         value={updateData[col.id]}
@@ -126,7 +126,7 @@ const EnhancedTableToolbar = (props) => {
                           setUpdateData(stateData);
                         }}
                         disabled={!col.edittable}
-                        key={`textfieldEdit${col.id}`}
+                        key={`textfieldEdit${col.id}${index}`}
                       />
                     </div>
                   ))

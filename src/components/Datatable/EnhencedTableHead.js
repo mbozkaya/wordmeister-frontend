@@ -28,7 +28,7 @@ function EnhancedTableHead(props) {
         </TableCell>
         {columns.map((headCell) => (
           <TableCell
-            key={headCell.id}
+            key={`hc${headCell.id}`}
             align={headCell.numeric ? 'right' : 'left'}
             padding={headCell.disablePadding ? 'none' : 'default'}
             sortDirection={orderBy === headCell.id ? order : false}
@@ -37,7 +37,7 @@ function EnhancedTableHead(props) {
               active={headCell.sorttable && orderBy === headCell.id}
               direction={headCell.sorttable && orderBy === headCell.id ? order : 'asc'}
               onClick={headCell.sorttable ? createSortHandler(headCell.id) : () => { }}
-              key={headCell.id}
+              key={`hsl${headCell.id}`}
             >
               {headCell.label}
               {orderBy === headCell.id ? (
