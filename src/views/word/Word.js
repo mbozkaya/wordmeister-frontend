@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import * as Yup from 'yup';
 import {
   Box,
@@ -16,6 +16,7 @@ import DataTable from 'src/components/Datatable/DataTable';
 import columns from 'src/configs/columns';
 import { Formik } from 'formik';
 import wordMeisterService from 'src/services/wordMeisterService';
+import ToasterSnackbar from 'src/components/ToasterSnackbar';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -40,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
 const Word = () => {
   const classes = useStyles();
   const [dataFlag, setDataFlag] = useState(false);
-
+  const wordEntering = useRef(null);
   return (
     <Page
       className={classes.root}
@@ -96,6 +97,9 @@ const Word = () => {
                           description: ''
                         });
                         setDataFlag(!dataFlag);
+                        wordEntering.current.focus();
+                      } else {
+                        ToasterSnackbar.error({ message: response.errorMessage || 'An error occured' });
                       }
                     });
                   }}
@@ -126,6 +130,7 @@ const Word = () => {
                               value={values.text}
                               onChange={handleChange}
                               key="textfield1"
+                              inputRef={wordEntering}
                             />
                           </Grid>
                           <Grid item sm={12} key="grid4">

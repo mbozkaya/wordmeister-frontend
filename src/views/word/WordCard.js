@@ -152,7 +152,7 @@ const WordCard = () => {
   const wordCount = useRef(cardData.wordCount);
 
   const getData = (currentIndex, isRandom = false) => {
-    if (currentIndex <= 1 || currentIndex > wordCount.current) {
+    if (currentIndex < 1 || currentIndex > wordCount.current) {
       return;
     }
     const model = {
@@ -174,12 +174,12 @@ const WordCard = () => {
     });
   };
   useEffect(() => {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     getData();
     const navigateButton = (e) => {
       switch (e.code.toLowerCase()) {
         case 'arrowleft':
-          getData(currentIndexRef.current - 1 > 0 ? currentIndexRef.current - 1 : 1);
+          getData(currentIndexRef.current - 1);
           break;
         case 'arrowright':
           getData(currentIndexRef.current + 1);
@@ -417,13 +417,13 @@ const WordCard = () => {
                           <List>
                             {
                               cardData.definations.map((value, index) => (
-                                <ListItem alignItems="flex-start" key={`${index}listItemdef`}>
-                                  <ListItemAvatar key={`${index}avatar`}>
-                                    <Typography variant="h1" className={classes.numberTypography} key={`${index}typodef`}>{index + 1}</Typography>
+                                <ListItem alignItems="flex-start" key={`${value.defination}listItemdef`}>
+                                  <ListItemAvatar key={`${value.defination}avatar`}>
+                                    <Typography variant="h1" className={classes.numberTypography} key={`${value.defination}typodef`}>{index + 1}</Typography>
                                   </ListItemAvatar>
                                   <ListItemText
                                     primary={value.defination}
-                                    key={`${index}listItemtextdefination`}
+                                    key={`${value.defination}listItemtextdefination`}
                                     secondary={value.type}
                                   />
                                 </ListItem>
@@ -434,50 +434,144 @@ const WordCard = () => {
                       }
                       {
                         currentTab === tabsEnum.sentences && (
-                          <List>
-                            {
-                              cardData.sentences == null || cardData.sentences?.length === 0 ? (
-                                <ListItem>
-                                  <ListItemText>
-                                    <Typography variant="h1" className={classes.typography} align="center">No data to show.</Typography>
-                                  </ListItemText>
-                                </ListItem>
-                              ) : (
-                                <>
-                                  {
+                          <>
+                            <List>
+                              {
+                                cardData.sentences == null || cardData.sentences?.length === 0 ? (
+                                  <ListItem>
+                                    <ListItemText>
+                                      <Typography variant="h1" className={classes.typography} align="center">No data to show.</Typography>
+                                    </ListItemText>
+                                  </ListItem>
+                                ) : (
+                                  <>
+                                    {
 
-                                    cardData.sentences.map((sentence, index) => (
-                                      <>
-                                        <ListItem alignItems="flex-start" key={`${index}listItem`}>
-                                          <ListItemAvatar key={`${index}avatar`}>
-                                            <Typography variant="h1" className={classes.numberTypography} key={`${index}typo`}>{index + 1}</Typography>
-                                          </ListItemAvatar>
-                                          <ListItemText
-                                            primary={sentence}
-                                            key={`${index}listItemtext`}
-                                          />
-                                        </ListItem>
-                                        <Divider key={`${index}divider`} variant="inset" component="li" />
-                                      </>
-                                    ))
-                                  }
-                                </>
-                              )
-                            }
-                            <ListItem>
-                              <Grid container direction="row">
-                                <Grid item xs={4} />
-                                <Grid item xs={4}>
-                                  <Grid container justify="center">
-                                    <Fab color="primary" aria-label="add" title="Add new custom sentence" onClick={() => setShowAddSentence(!showAddSentence)}>
-                                      <AddIcon />
-                                    </Fab>
+                                      cardData.sentences.map((sentence, index) => (
+                                        <>
+                                          <ListItem alignItems="flex-start" key={`${sentence}listItem`}>
+                                            <ListItemAvatar key={`${sentence}avatar`}>
+                                              <Typography variant="h1" className={classes.numberTypography} key={`${index}typo`}>{index + 1}</Typography>
+                                            </ListItemAvatar>
+                                            <ListItemText
+                                              primary={sentence}
+                                              key={`${sentence}listItemtext`}
+                                            />
+                                          </ListItem>
+                                          <Divider key={`${sentence}divider`} variant="inset" component="li" />
+                                        </>
+                                      ))
+                                    }
+                                  </>
+                                )
+                              }
+                              <ListItem key="staticListItem">
+                                <Grid container direction="row">
+                                  <Grid item xs={4} />
+                                  <Grid item xs={4}>
+                                    <Grid container justify="center">
+                                      <Fab color="primary" aria-label="add" title="Add new custom sentence" onClick={() => setShowAddSentence(!showAddSentence)}>
+                                        <AddIcon />
+                                      </Fab>
+                                    </Grid>
+                                  </Grid>
+                                  <Grid item xs={4} />
+                                </Grid>
+                              </ListItem>
+                            </List>
+                            {
+                              showAddSentence && (
+                                <Grid item xs={12}>
+                                  <Grid container justify="center" direction="row">
+                                    <Grid item xs={2} />
+                                    <Grid item xs={8} className={classes.backgroundPaper}>
+                                      <Grid container spacing={2}>
+                                        <Grid item xs={12}>
+                                          <Formik
+                                            onSubmit={(model) => {
+                                              model.userWordId = cardData.userWordId;
+                                              wordMeisterService.setCustomSentence(model).then((response) => {
+                                                if (response && response.error === false) {
+                                                  ToasterSnackbar.success({ message: 'Your sentece added successfully' });
+                                                  getData(cardData.currentIndex);
+                                                  setShowAddSentence(false);
+                                                } else {
+                                                  ToasterSnackbar.success({ message: response.errorMessage || 'An error occured' });
+                                                }
+                                              });
+                                            }}
+                                            initialValues={{
+                                              sentence: '',
+                                              isPrivate: false,
+                                            }}
+                                            validationSchema={
+                                              Yup.object().shape({
+                                                sentence: Yup.string()
+                                                  .min(cardData.word.length + 1, 'too less your sentence')
+                                                  .required('You should enter a sentence.')
+                                                  .matches(new RegExp(cardData.word, 'gi'), `You should use the ${cardData.word} your sentence.`)
+                                              })
+                                            }
+                                          >
+                                            {
+                                              ({
+                                                errors,
+                                                handleBlur,
+                                                handleChange,
+                                                handleSubmit,
+                                                touched,
+                                                values
+                                              }) => (
+                                                <form onSubmit={handleSubmit} className={classes.customSentence}>
+                                                  <Box my={2}>
+                                                    <TextField
+                                                      error={Boolean(touched.sentence && errors.sentence)}
+                                                      fullWidth
+                                                      helperText={touched.sentence && errors.sentence}
+                                                      label="Custom Sentence"
+                                                      placeholder="Enter a sentence"
+                                                      multiline
+                                                      variant="outlined"
+                                                      onBlur={handleBlur}
+                                                      onChange={handleChange}
+                                                      value={values.sentence}
+                                                      name="sentence"
+                                                      autoFocus
+                                                    />
+                                                    <FormControlLabel
+                                                      control={<Checkbox />}
+                                                      label="This sentence showed only me."
+                                                    />
+                                                  </Box>
+                                                  <Grid container direction="row">
+                                                    <Grid item xs={4} />
+                                                    <Grid item xs={4}>
+                                                      <Grid container justify="center">
+                                                        <Button
+                                                          color="primary"
+                                                          size="medium"
+                                                          type="submit"
+                                                          variant="contained"
+                                                        >
+                                                          Add
+                                                        </Button>
+                                                      </Grid>
+                                                    </Grid>
+                                                    <Grid item xs={4} />
+                                                  </Grid>
+                                                </form>
+                                              )
+                                            }
+                                          </Formik>
+                                        </Grid>
+                                      </Grid>
+                                    </Grid>
+                                    <Grid item xs={2} />
                                   </Grid>
                                 </Grid>
-                                <Grid item xs={4} />
-                              </Grid>
-                            </ListItem>
-                          </List>
+                              )
+                            }
+                          </>
                         )
                       }
                     </Grid>
@@ -503,98 +597,6 @@ const WordCard = () => {
                 </Grid>
               </Grid>
             </Grid>
-            {
-              showAddSentence && (
-                <Grid item xs={12}>
-                  <Grid container justify="center" direction="row">
-                    <Grid item xs={2} />
-                    <Grid item xs={8} className={classes.backgroundPaper}>
-                      <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                          <Formik
-                            onSubmit={(model) => {
-                              model.userWordId = cardData.userWordId;
-                              wordMeisterService.setCustomSentence(model).then((response) => {
-                                if (response && response.error === false) {
-                                  ToasterSnackbar.success({ message: 'Your sentece added successfully' });
-                                  getData(cardData.currentIndex);
-                                  setShowAddSentence(false);
-                                } else {
-                                  ToasterSnackbar.success({ message: response.errorMessage || 'An error occured' });
-                                }
-                              });
-                            }}
-                            initialValues={{
-                              sentence: '',
-                              isPrivate: false,
-                            }}
-                            validationSchema={
-                              Yup.object().shape({
-                                sentence: Yup.string()
-                                  .min(cardData.word.length + 1, 'too less your sentence')
-                                  .required('You should enter a sentence.')
-                                  .matches(new RegExp(cardData.word, 'gi'), `You should use the ${cardData.word} your sentence.`)
-                              })
-                            }
-                          >
-                            {
-                              ({
-                                errors,
-                                handleBlur,
-                                handleChange,
-                                handleSubmit,
-                                touched,
-                                values
-                              }) => (
-                                <form onSubmit={handleSubmit} className={classes.customSentence}>
-                                  <Box my={2}>
-                                    <TextField
-                                      error={Boolean(touched.sentence && errors.sentence)}
-                                      fullWidth
-                                      helperText={touched.sentence && errors.sentence}
-                                      label="Custom Sentence"
-                                      placeholder="Enter a sentence"
-                                      multiline
-                                      variant="outlined"
-                                      onBlur={handleBlur}
-                                      onChange={handleChange}
-                                      value={values.sentence}
-                                      name="sentence"
-                                      autoFocus
-                                    />
-                                    <FormControlLabel
-                                      control={<Checkbox />}
-                                      label="This sentence showed only me."
-                                    />
-                                  </Box>
-                                  <Grid container direction="row">
-                                    <Grid item xs={4} />
-                                    <Grid item xs={4}>
-                                      <Grid container justify="center">
-                                        <Button
-                                          color="primary"
-                                          size="medium"
-                                          type="submit"
-                                          variant="contained"
-                                        >
-                                          Add
-                                        </Button>
-                                      </Grid>
-                                    </Grid>
-                                    <Grid item xs={4} />
-                                  </Grid>
-                                </form>
-                              )
-                            }
-                          </Formik>
-                        </Grid>
-                      </Grid>
-                    </Grid>
-                    <Grid item xs={2} />
-                  </Grid>
-                </Grid>
-              )
-            }
           </Grid>
           <Drawer anchor="right" open={settingsOpen} onClose={() => setSettingsOpen(false)}>
             <WordCardSettings drawerOpen={settingsOpen} onSettingsChange={() => getData()} />
