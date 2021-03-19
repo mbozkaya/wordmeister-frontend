@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
@@ -49,7 +50,8 @@ const EnhancedTableToolbar = (props) => {
   const {
     numSelected, title, drawerOpen, drawerData, onDrawerClose,
     onDrawerUpdate, dialogOnSubmit, DialogName, DialogDescription,
-    confirmationDialogSubmit, confirmationDialogSubmitText, selectedData, addButtonDisable, columns
+    confirmationDialogSubmit, confirmationDialogSubmitText,
+    selectedData, addButtonDisable, columns, filterButtonDisable
   } = props;
 
   const [updateData, setUpdateData] = useState({});
@@ -92,11 +94,15 @@ const EnhancedTableToolbar = (props) => {
       )
         : (
           <>
-            <Tooltip title="Filter list">
-              <IconButton aria-label="filter list">
-                <FilterListIcon />
-              </IconButton>
-            </Tooltip>
+            {
+              filterButtonDisable && (
+              <Tooltip title="Filter list">
+                <IconButton aria-label="filter list">
+                  <FilterListIcon />
+                </IconButton>
+              </Tooltip>
+              )
+            }
             {addButtonDisable && (
               <Tooltip title="Add Item">
                 <IconButton
@@ -132,23 +138,6 @@ const EnhancedTableToolbar = (props) => {
                   ))
                 )
               }
-              {/* <div>
-                <TextField
-                  id="standard-basic"
-                  label="Title"
-                  value={updateData.title}
-                  onChange={(el) => setUpdateData({
-                    ...updateData,
-                    title: el.target.value,
-                  })}
-                />
-              </div>
-              <div>
-                <TextField id="filled-basic" label="Filled" disabled value={updateData.createdUserName} />
-              </div>
-              <div>
-                <TextField id="outlined-basic" label="Outlined" disabled value={updateData.createdDate} />
-              </div> */}
               <div>
                 <Button variant="contained" size="small" color="primary" className={classes.margin} onClick={() => onDrawerUpdate(updateData)}>
                   Update
@@ -164,18 +153,6 @@ const EnhancedTableToolbar = (props) => {
           <DialogContentText>
             {DialogDescription}
           </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="registerTitle"
-            label="Register Name"
-            fullWidth
-            value={dialogData.title}
-            onChange={(el) => setDialogData({
-              ...dialogData,
-              title: el.target.value,
-            })}
-          />
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDialogOpen(false)} color="primary">
@@ -238,6 +215,7 @@ EnhancedTableToolbar.propTypes = {
   selectedData: PropTypes.array,
   addButtonDisable: PropTypes.bool,
   columns: PropTypes.array,
+  filterButtonDisable: PropTypes.bool,
 };
 
 EnhancedTableToolbar.defaultProps = {
@@ -246,13 +224,14 @@ EnhancedTableToolbar.defaultProps = {
   onDrawerClose: () => console.log('closed'),
   onDrawerUpdate: (data) => console.log(data),
   dialogOnSubmit: (model) => console.log(model),
-  DialogName: 'Register',
-  DialogDescription: 'Create a new register',
+  DialogName: '',
+  DialogDescription: '',
   confirmationDialogSubmit: () => console.log('confirmation dialog submit'),
   confirmationDialogSubmitText: 'Delete',
   selectedData: [],
   addButtonDisable: false,
   columns: [],
+  filterButtonDisable: false,
 };
 
 export default EnhancedTableToolbar;

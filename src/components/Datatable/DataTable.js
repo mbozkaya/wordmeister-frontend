@@ -171,7 +171,7 @@ const DataTable = (props) => {
       <Paper className={classes.paper}>
         <EnhancedTableToolbar
           numSelected={selected.length}
-          title="Register"
+          title=""
           drawerOpen={drawerOpen}
           drawerData={editRow}
           onDrawerClose={() => setDrawerOpen(false)}
