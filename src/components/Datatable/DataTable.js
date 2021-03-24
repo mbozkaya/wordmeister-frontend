@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
 
 const DataTable = (props) => {
   const {
-    defaultRowsPerPage, columns,
+    columns,
     rowEdit, insertNewRow, removeRow, getData, getDataFlag
   } = props;
 
@@ -65,7 +65,7 @@ const DataTable = (props) => {
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const dense = false;
-  const [rowsPerPage, setRowsPerPage] = React.useState(defaultRowsPerPage);
+  const [rowsPerPage, setRowsPerPage] = React.useState(defaultOrder.rowsPerPage);
   const [totalRowCount, setTotalRowCount] = useState(0);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editRow, setEditRow] = useState({});
@@ -85,9 +85,10 @@ const DataTable = (props) => {
       orderBy: property,
       order: isAsc ? 'desc' : 'asc',
     });
-    defaultOrder.order = isAsc ? 'desc' : 'asc';
-    defaultOrder.orderBy = property;
-    common.setDatatableFilter(defaultOrder);
+    const dataTableSettings = common.getDatatableOrder();
+    dataTableSettings.order = isAsc ? 'desc' : 'asc';
+    dataTableSettings.orderBy = property;
+    common.setDatatableFilter(dataTableSettings);
   };
 
   const handleSelectAllClick = (event) => {
@@ -136,6 +137,7 @@ const DataTable = (props) => {
 
   const handleChangeRowsPerPage = (event) => {
     const newPageSize = parseInt(event.target.value, 10);
+    const dataTableSettings = common.getDatatableOrder();
     setRowsPerPage(newPageSize);
     setPage(0);
     setPagingParam({
@@ -143,6 +145,8 @@ const DataTable = (props) => {
       pageSize: newPageSize,
       pageCount: 0,
     });
+    dataTableSettings.rowsPerPage = newPageSize;
+    common.setDatatableFilter(dataTableSettings);
   };
 
   const isSelected = (name) => selected.indexOf(name) !== -1;

@@ -30,6 +30,7 @@ const common = {
     return {
       order: 'asc',
       orderBy: 'CreatedDate',
+      rowsPerPage: 10,
     };
   },
   setDatatableFilter: (value) => {
